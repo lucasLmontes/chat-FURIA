@@ -17,10 +17,31 @@ const TelaChat = () => {
         return() => pararAtualizacao();
     }, []);
 
+    const gerarRespostaBot = (mensagemRecebida) => {
+        const respostaPadrao = "Olá! Seja bem vindo ao mobile chat da equipe de CS da FURIA!"
+        return{
+            text: respostaPadrao,
+            sender: 'FURIAbot',
+            timestamp: Date.now()
+        };
+    };
+
     const enviarMensagem = async () => {
         if(text.trim() === '') return;
-        await addDoc(collection(db, 'mensagens'), {text, sender: 'Usuário', timestamp: Date.now()});
+
+        const mensagemUsuario = {
+            text: text,
+            sender: 'Usuário',
+            timestamp: Date.now()
+        }
+
+        await addDoc(collection(db, 'mensagens'), mensagemUsuario);
         setText('');
+
+        setTimeout(async () => {
+            const respostaBot = gerarRespostaBot(mensagemUsuario);
+            await addDoc(collection(db, 'mensagens'), respostaBot);
+        }, 1000)
     };
 
     return (
